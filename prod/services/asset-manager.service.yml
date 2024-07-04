@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: asset-manager
+  namespace: garmento
+spec:
+  selector:
+    matchLabels:
+      app: asset-manager
+  template:
+    metadata:
+      labels:
+        app: asset-manager
+    spec:
+      containers:
+        - name: asset-manager
+          image: garmento.io/asset-manager:latest
+          imagePullPolicy: Never
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 8000
+          volumeMounts:
+            - name: asset-manager-persistent-storage
+              mountPath: /project/assets
+      volumes:
+        - name: asset-manager-persistent-storage
+          persistentVolumeClaim:
+            claimName: asset-manager-volume-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: asset-manager
+  namespace: garmento
+spec:
+  selector:
+    app: asset-manager
+  type: ClusterIP
+  clusterIP: 10.96.1.0
+  ports:
+    - name: rest-api
+      port: 443
+      protocol: TCP
+      targetPort: 8000
+    - name: rest-api-80
+      port: 80
+      protocol: TCP
+      targetPort: 8000

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-details-example
+  namespace: garmento
+spec:
+  selector:
+    matchLabels:
+      app: product-details-example
+  template:
+    metadata:
+      labels:
+        app: product-details-example
+    spec:
+      containers:
+        - name: product-details-example
+          image: garmento.io/product-details-example:latest
+          imagePullPolicy: Never
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "200m"
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-details-example
+  namespace: garmento
+spec:
+  selector:
+    app: product-details-example
+  type: ClusterIP
+  clusterIP: 10.96.8.0
+  ports:
+    - name: rest-api
+      port: 443
+      protocol: TCP
+      targetPort: 80
+    - name: rest-api-80
+      port: 80
+      protocol: TCP
+      targetPort: 80

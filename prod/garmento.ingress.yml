@@ -16,6 +16,13 @@ spec:
       http:
         paths:
           - pathType: ImplementationSpecific
+            path: "/product-details/(.*)(/|$)"
+            backend:
+              service:
+                name: product-details-example
+                port:
+                  number: 80
+          - pathType: ImplementationSpecific
             path: "/(.*)(/|$)"
             backend:
               service:
